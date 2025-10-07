@@ -13,7 +13,7 @@ import { products } from "./routes/products.route";
 const app = express();
 app.use(
   cors({
-    origin: env.CLIENT_ORIGIN,
+    origin: env.CLIENT_ORIGIN_LOCAL,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
    
