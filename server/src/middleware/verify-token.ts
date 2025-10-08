@@ -44,7 +44,7 @@ export default function (): (req: Request, res: Response, next: NextFunction) =>
           return next(createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_MISSING));
       } else {
         console.log("ifelse",err)
-         return next(createHttpError(HttpStatus.FORBIDDEN, HttpResponse.TOKEN_INVALID));
+         return next(createHttpError(HttpStatus.FORBIDDEN, HttpResponse.TOKEN_MISSING));
       }
     }
   };
