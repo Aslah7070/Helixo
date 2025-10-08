@@ -33,15 +33,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       dispatch(setUser({ user }));
       console.log("nsdnmds,mds")
     } else {
-      dispatch(logOut());
-      navigate("/");
+      // dispatch(logOut());
+      // navigate("/");
     }
   } catch (error) {
     console.error("Token verification failed:", error);    
     console.log("noteeeeeeeeee,mds")
 
     dispatch(logOut());
-    navigate("/");
+    navigate("/");  
   } finally {
     const elapsed = Date.now() - start;
     const minDelay = 0; 
