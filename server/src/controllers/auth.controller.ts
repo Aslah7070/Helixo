@@ -188,6 +188,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 
     console.log("worked")
     const { refreshToken } = req.cookies;
+     console.log("refreshToken rere",refreshToken)
 refreshToken
     if (!refreshToken) {
       return res
