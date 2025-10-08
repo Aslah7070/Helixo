@@ -8,12 +8,12 @@ export default function (): (req: Request, res: Response, next: NextFunction) =>
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
       const authHeader = req.headers.authorization;
-      console.log("authHeader",authHeader)
+      console.log("authHeaderssssssss",authHeader)
 
       if (!authHeader || !authHeader.startsWith("Bearer")) {
         console.log("dsf")
         // throw createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_MISSING)
-          return next(createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_MISSING));
+          return next(createHttpError(HttpStatus.UNAUTHORIZED, "poyi monee"));
       }
 
       const token = authHeader.split(" ")[1];
