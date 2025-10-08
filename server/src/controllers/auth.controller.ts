@@ -188,7 +188,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 
     console.log("worked")
     const { refreshToken } = req.cookies;
-
+refreshToken
     if (!refreshToken) {
       return res
         .status(HttpStatus.UNAUTHORIZED)
