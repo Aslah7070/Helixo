@@ -193,7 +193,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     if (!refreshToken) {
       return res
         .status(HttpStatus.UNAUTHORIZED)
-        .json({ success: false, message: "No refresh token provided" });
+        .json({ success: false, message: "No refresh token provided",refreshToken });
     }
 
     const decodedToken = verifyRefreshToken(refreshToken) as IPayload;
