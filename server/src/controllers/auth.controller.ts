@@ -147,15 +147,11 @@ export const verifyingToken = async (req: Request, res: Response) => {
         const refreshDecoded = verifyRefreshToken(refreshToken) as IPayload;
         newAccessToken = generateAccessToken(refreshDecoded); 
         decodedToken = refreshDecoded;
-        res.cookie("accessToken", newAccessToken, {
-          httpOnly: true,
-          sameSite: "strict",
-          secure: process.env.NODE_ENV === "production",
-        });
+
       } catch {
         return res.status(HttpStatus.UNAUTHORIZED).json({
           success: false,
-          message: HttpResponse.TOKEN_INVALID,
+          message: HttpResponse.TOKEN_MISSING,
         });
       }
     }
