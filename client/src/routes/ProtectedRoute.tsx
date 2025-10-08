@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks/hook";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { axiosInstance } from "../configs/axios.configs.ts";
-import { setUser } from "../redux/slices/authSlice";
+import { logOut, setUser } from "../redux/slices/authSlice";
 import Loader from "../components/re-usable/Loader.tsx";
 
 
@@ -33,16 +33,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       dispatch(setUser({ user }));
       console.log("nsdnmds,mds")
     } else {
-      // dispatch(logOut());
-      // navigate("/");
+      dispatch(logOut());
+      navigate("/");
     }
   } catch (error) {
     console.error("Token verification failed:", error);    
     console.log("noteeeeeeeeee,mds")
 
-    // dispatch(logOut());
-    // navigate("/");  
-  } finally {
+    dispatch(logOut());
+    navigate("/");  
+  } finally { 
     const elapsed = Date.now() - start;
     const minDelay = 0; 
     const remaining = minDelay - elapsed;
