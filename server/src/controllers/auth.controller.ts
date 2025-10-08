@@ -130,12 +130,14 @@ export const verifyingToken = async (req: Request, res: Response) => {
         message: "arreeelum kando",
       });
     }
-
+ console.log("anyooiaccessToken",accessToken)
+ console.log("anyooirefreshToken",refreshToken)
     let decodedToken: IPayload | null = null
     let newAccessToken: string | null = null;
     if (accessToken) {
       try {
         decodedToken = verifyAccessToken(accessToken)as IPayload
+        console.log("anyooi",decodedToken)
       } catch (err) {
         console.log("Access token invalid or expired");
       }
@@ -144,7 +146,10 @@ export const verifyingToken = async (req: Request, res: Response) => {
     if (!decodedToken && refreshToken) {
       try {
         const refreshDecoded = verifyRefreshToken(refreshToken) as IPayload;
-        newAccessToken = generateAccessToken(refreshDecoded); 
+          console.log("refreshDecoded",refreshDecoded)
+const { iat, exp, ...payload } = refreshDecoded;
+const newAccessToken = generateAccessToken(payload);
+         console.log("newAccessToken",newAccessToken)
         decodedToken = refreshDecoded;
 
       } catch {
