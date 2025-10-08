@@ -11,5 +11,6 @@ export const ADMIN_ROUTES = {
   ADD_PRODUCTS:"/products/add",
   UPDATE_PRODUCTS: "/products/update",
   DELETE_PRODUCTS: "/products/delete",
+  GET_STATS: "/products/stats",
   // Add more user routes here
 };

@@ -6,6 +6,7 @@ import {  useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { adminController } from "../../../controllers/admin.controller";
 import CategoryProgressSkeleton from "../../../skeltens/Progress";
+import StatsChart from "./ChartStats";
 
 
 
@@ -39,6 +40,8 @@ const categories=data?.categories
 )}
 
     <ProductsTable products={data?.data} page={page} setPage={setPage} total={productsCount}  limit={limit} isLoading={isLoading}/>
+
+    <StatsChart/>
     </div>
   );
 };

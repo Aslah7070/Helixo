@@ -1,4 +1,3 @@
-
 import { SquarePen, Trash2 } from "lucide-react";
 import ProductsTableSkeleton from "../../../skeltens/ProductTable";
 import type { IProduct } from "../../../types/type";
@@ -6,42 +5,60 @@ import { AddProductDialog } from "./AddProducts";
 import { AlertDialogBox } from "../../re-usable/AlertModal";
 import { adminController } from "../../../controllers/admin.controller";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { UpdateProductDialog } from "./updateProducts";
+import toast from "react-hot-toast";
 
 type ProductsTableProps = {
   products: IProduct[];
   isLoading: boolean;
   page: number;
   limit: number;
-  total: number; // total number of products
-  setPage: (page: number) => void; // function to update the current page
+  total: number;
+  setPage: (page: number) => void;
 };
 
-const ProductsTable = ({ products, isLoading, page, limit, total, setPage }: ProductsTableProps) => {
+const ProductsTable = ({
+  products,
+  isLoading,
+  page,
+  limit,
+  total,
+  setPage,
+}: ProductsTableProps) => {
   const queryClient = useQueryClient();
 
   const deleteProductMutation = useMutation({
     mutationFn: (productId: string) => adminController.deleteProduct(productId),
     onMutate: async (productId: string) => {
       await queryClient.cancelQueries({ queryKey: ["products", page, limit] });
-      const previousQueryData = queryClient.getQueryData<{ data: IProduct[] }>(["products", page, limit]);
+      const previousQueryData = queryClient.getQueryData<{ data: IProduct[] }>([
+        "products",
+        page,
+        limit,
+      ]);
+
       const previousProducts = previousQueryData?.data || [];
       queryClient.setQueryData(["products", page, limit], {
         ...previousQueryData,
         data: previousProducts.filter((p) => p._id !== productId),
       });
+
       return { previousProducts };
     },
+
     onError: (_err, _taskId, context) => {
       if (context?.previousProducts) {
-        queryClient.setQueryData(["products", page, limit], context.previousProducts);
+        queryClient.setQueryData(
+          ["products", page, limit],
+          context.previousProducts
+        );
       }
     },
+
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["products", page, limit] });
     },
   });
-
-
 
   return (
     <div>
@@ -59,7 +76,6 @@ const ProductsTable = ({ products, isLoading, page, limit, total, setPage }: Pro
                 <th className="py-2 px-4 md:px-8">PRICE</th>
                 <th className="py-2 px-4 md:px-12">CATEGORY</th>
                 <th className="py-2 px-4 w-32 md:w-96">STOCK</th>
-
               </tr>
             </thead>
 
@@ -72,16 +88,27 @@ const ProductsTable = ({ products, isLoading, page, limit, total, setPage }: Pro
                     <td className="py-2 px-4 md:px-8">{p.name}</td>
                     <td className="py-2 px-4 md:px-8">${p.price.toFixed(2)}</td>
                     <td className="py-2 px-4 md:px-16">
-                      <span className="bg-gray-200 py-1 px-2 rounded text-sm">{p.category}</span>
+                      <span className="bg-gray-200 py-1 px-2 rounded text-sm">
+                        {p.category}
+                      </span>
                     </td>
                     <td className="py-2 px-4 w-32 md:w-96">{p.stock}</td>
                     <td className="py-2 px-4 flex space-x-2 justify-center">
-                      <span className="bg-white hover:bg-gray-100 focus:outline-none p-1 rounded">
-                        <SquarePen className="text-gray-500" />
-                      </span>
+                      <UpdateProductDialog
+                        toggleIcon={
+                          <>
+                            <span className=" hover:bg-white focus:outline-none p-1 rounded">
+                              <SquarePen className="text-gray-500" />
+                            </span>
+                          </>
+                        }
+                        product={p}
+                        page={page}
+                        limit={limit}
+                      />
                       <AlertDialogBox
                         triggerLabel={
-                          <span className="bg-white hover:bg-amber-300 focus:outline-none p-1 rounded cursor-pointer">
+                          <span className="bg-white  focus:outline-none p-1 rounded cursor-pointer">
                             <Trash2 className="w-5 h-5 text-gray-500" />
                           </span>
                         }
@@ -91,7 +118,9 @@ const ProductsTable = ({ products, isLoading, page, limit, total, setPage }: Pro
                         cancelText="Cancel"
                         triggerVariant="destructive"
                         onAction={async () => {
+                            await new Promise((resolve) => setTimeout(resolve, 1000));
                           await deleteProductMutation.mutateAsync(p._id);
+                          toast.success("products deleted  successfully")
                         }}
                         onCancel={() => console.log("Delete cancelled")}
                       />
@@ -103,32 +132,29 @@ const ProductsTable = ({ products, isLoading, page, limit, total, setPage }: Pro
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex justify-center items-center mt-4 space-x-4">
-  {/* Previous button */}
-  <button
-    className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-    onClick={() => setPage(page - 1)}
-    disabled={page === 1}
-  >
-    Previous
-  </button>
+        {total > limit && (
+          <div className="flex justify-center items-center mt-4 space-x-4">
+            <button
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+            >
+              Previous
+            </button>
 
-  {/* Current page display */}
-  <span className="px-3 py-1 rounded bg-gray-100 text-gray-700">
-     {page}
-  </span>
+            <span className="px-3 py-1 rounded bg-gray-100 text-gray-700">
+              {page}
+            </span>
 
-  {/* Next button */}
-  <button
-    className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-    onClick={() => setPage(page + 1)}
-    disabled={page * limit >= total} // disable if last page
-  >
-    Next
-  </button>
-</div>
-
+            <button
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+              onClick={() => setPage(page + 1)}
+              disabled={page * limit >= total}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );

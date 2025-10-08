@@ -35,7 +35,7 @@ export function AlertDialogBox({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button className="bg-white text-white" variant={triggerVariant}>{triggerLabel}</Button>
+        <Button className="!bg-white text-black border !border-black" variant={triggerVariant}>{triggerLabel}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="bg-black text-white flex flex-col  items-center w-82">
         <AlertDialogHeader>

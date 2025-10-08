@@ -1,5 +1,5 @@
-"use client";
-import React, { useState } from "react";
+
+import React from "react";
 import { Button } from "../ui/Button";
 import {
   Dialog,
@@ -15,8 +15,10 @@ type GenericDialogProps = {
   toggleIcon: React.ReactNode;
   title: string;
   description?: string;
-  footer?: React.ReactNode; // optional footer
-  children: React.ReactNode; // form or any content
+  footer?: React.ReactNode; 
+  children: React.ReactNode; 
+    open: boolean; 
+  setOpen: (state: boolean) => void; 
 };
 
 const GenericDialog: React.FC<GenericDialogProps> = ({
@@ -25,13 +27,15 @@ const GenericDialog: React.FC<GenericDialogProps> = ({
   description,
   footer,
   children,
+  setOpen,
+  open
 }) => {
-  const [open, setOpen] = useState(false);
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="text-white cursor-pointer">{toggleIcon}</Button>
+        <Button className="text-black border !border-black hover:!bg-white cursor-pointer shadow-none !bg-transparent">{toggleIcon}</Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[500px] bg-black text-white">

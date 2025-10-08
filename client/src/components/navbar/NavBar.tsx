@@ -14,10 +14,11 @@ const NavBar = () => {
   const user = useAppSelector((state) => state.auth.user);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [active,setActive]=useState<IUser>()
+  console.log("ueeeeeeeeeeeeeee",user)
 
 
   useEffect(()=>{
-    if(!user._id) return
+    if(!user?._id) return
 const find=async()=>{
     console.log("useEffect")
        const user= await AuthController.findActiveUser()
@@ -27,15 +28,15 @@ const find=async()=>{
 }
 
 find()
-  },[user._id])
+  },[user?._id])
 
   return (
     <header className="bg-white text-black shadow-md">
       <div className="container mx-auto flex justify-between items-center px-4 py-3">
-        {/* Logo / Title */}
+
         <h1 className="text-2xl font-semibold">Dashboard</h1>
 
-        {/* Desktop Menu */}
+     
         <div className="hidden md:flex items-center space-x-4">
           <span className="text-gray-600">{active?.email}</span>
 
@@ -52,8 +53,6 @@ find()
             onCancel={() => console.log("Logout cancelled")}
           />
         </div>
-
-        {/* Mobile Menu Button */}
         <div className="md:hidden">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -63,8 +62,6 @@ find()
           </button>
         </div>
       </div>
-
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200 px-4 py-3 space-y-2">
           <span className="block text-gray-600">{active?.email}</span>

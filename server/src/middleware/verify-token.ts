@@ -12,12 +12,13 @@ export default function (): (req: Request, res: Response, next: NextFunction) =>
 
       if (!authHeader || !authHeader.startsWith("Bearer")) {
         console.log("dsf")
-        throw createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_MISSING)
+        // throw createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_MISSING)
+          return next(createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_MISSING));
       }
 
       const token = authHeader.split(" ")[1];
       if (!token) {
-        throw createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_MISSING)
+      return next(createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_MISSING));
       }
 
       const payload = verifyAccessToken(token) as {
@@ -25,9 +26,11 @@ export default function (): (req: Request, res: Response, next: NextFunction) =>
         email: string;
         password: string
       };
-         console.log(payload,"erer")
+         console.log(payload,"verificatio failed")
          if(!payload){
-           throw createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_INVALID)
+            res.status(HttpStatus.UNAUTHORIZED).json({success:false,message:HttpResponse.TOKEN_INVALID})
+            return
+         
          }
 
 
@@ -37,10 +40,11 @@ export default function (): (req: Request, res: Response, next: NextFunction) =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (err.name === "TokenExpiredError") {
-        throw createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.INVALID_CREDENTIALS)
+          console.log("else",err)
+          return next(createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_INVALID));
       } else {
-        console.log("rere",err)
-        throw createHttpError(HttpStatus.FORBIDDEN, HttpResponse.TOKEN_MISSING)
+        console.log("ifelse",err)
+         return next(createHttpError(HttpStatus.FORBIDDEN, HttpResponse.TOKEN_INVALID));
       }
     }
   };

@@ -31,12 +31,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (response.data.success) {
       const { user } = response.data;
       dispatch(setUser({ user }));
+      console.log("nsdnmds,mds")
     } else {
       dispatch(logOut());
       navigate("/");
     }
   } catch (error) {
-    console.error("Token verification failed:", error);
+    console.error("Token verification failed:", error);    
+    console.log("noteeeeeeeeee,mds")
+
     dispatch(logOut());
     navigate("/");
   } finally {
@@ -74,7 +77,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  console.log(allowedRoles,"ddd")
 
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
     console.log("not")

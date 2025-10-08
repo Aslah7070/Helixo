@@ -9,6 +9,7 @@ export const createProduct = async (req: Request, res: Response) => {
     const { name, price, category, stock } = req.body;
 
  const payloadHeader = req.headers["x-user-payload"] as string |undefined
+ console.log("payloadHeader",payloadHeader)
    if (!payloadHeader) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
@@ -27,6 +28,7 @@ export const createProduct = async (req: Request, res: Response) => {
 
     res.status(HttpStatus.CREATED).json({ success: true, message:HttpResponse.PRODUCT_CREATED, data: "" });
   } catch (error) {
+     console.log("addingserver",error)
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };
@@ -34,6 +36,7 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
+    console.log("comingddddddddd")
     const payloadHeader = req.headers["x-user-payload"] as string | undefined;
     if (!payloadHeader) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -176,16 +179,55 @@ export const deleteProduct = async (req: Request, res: Response) => {
 }
 
 
-// export const getAllProducts = async (req: Request, res: Response) => {
-//   try {
-//     const products = await Products.find();
+export const getStats = async (req: Request, res: Response) => {
+  try {
+    console.log("workde statssssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
+    const payloadHeader = req.headers["x-user-payload"] as string | undefined;
+    if (!payloadHeader) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
 
-//     if (!products || products.length === 0) {
-//       return res.status(404).json({ success: false, message:HttpResponse.PRODUCT_NOT_FOUND});
-//     }
+    const payload = JSON.parse(payloadHeader);
+    const userId = toObjectId(payload._id);
 
-//     res.status(200).json({ success: true, message:HttpResponse.PRODUCT_FETCH_SUCCESS,data: products });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
+
+    const monthlyStats = await Products.aggregate([
+      { $match: { userId } },
+      {
+        $group: {
+          _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
+          sold: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]);
+
+    const months = monthlyStats.map((m) => `${m._id.month}-${m._id.year}`);
+    const productsSold = monthlyStats.map((m) => m.sold);
+
+    const categoryBreakdown = await Products.aggregate([
+      { $match: { userId } },
+      { $group: { _id: "$category", count: { $sum: 1 } } },
+      { $project: { _id: 0, name: "$_id", count: 1 } },
+      { $sort: { count: -1 } },
+    ]);
+
+    return res.status(HttpStatus.OK).json({
+      success: true,
+      months,
+      productsSold,
+      categories: categoryBreakdown,
+    });
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+

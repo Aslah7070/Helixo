@@ -1,47 +1,52 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useFormik } from "formik";
-
 import GenericDialog from "../../re-usable/Dialog";
 import { adminController } from "../../../controllers/admin.controller";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { IProduct } from "../../../types/type";
+import type React from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { SpinnerCustom } from "../../re-usable/SpinnerLoding";
-
-type AddProductDialogProps = {
+type UpdateProductDialogProps = {
+  product: IProduct;
   page: number;
   limit: number;
+  toggleIcon: React.ReactElement;
 };
 
-export const AddProductDialog = ({ page, limit }: AddProductDialogProps) => {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+export const UpdateProductDialog = ({
+  toggleIcon,
+  product,
+  page,
+  limit,
+}: UpdateProductDialogProps) => {
+
+      const [open, setOpen] = useState(false);
+      const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
 
-  const addProductMutation = useMutation({
-    mutationFn: (newProduct: IProduct) =>
-      adminController.addProduct(newProduct),
+  const updateProductMutation = useMutation({
+    mutationFn: (updatedProduct: IProduct) =>
+      adminController.updateProduct(updatedProduct._id, updatedProduct),
 
-    onMutate: async (newProduct) => {
-      // Cancel any outgoing refetches
+    onMutate: async (updatedProduct) => {
       await queryClient.cancelQueries({ queryKey: ["products", page, limit] });
-      queryClient.invalidateQueries({ queryKey: ["stats"] });
 
-      // Snapshot previous data
       const previousQueryData = queryClient.getQueryData<{ data: IProduct[] }>([
         "products",
         page,
         limit,
       ]);
 
-      // Optimistically add new product to current page
-      queryClient.setQueryData(["products", page, limit], {
-        ...previousQueryData,
-        data: previousQueryData
-          ? [newProduct, ...previousQueryData.data]
-          : [newProduct],
-      });
+      if (previousQueryData) {
+        queryClient.setQueryData(["products", page, limit], {
+          ...previousQueryData,
+          data: previousQueryData.data.map((p) =>
+            p._id === updatedProduct._id ? { ...p, ...updatedProduct } : p
+          ),
+        });
+      }
 
       return { previousQueryData };
     },
@@ -56,74 +61,70 @@ export const AddProductDialog = ({ page, limit }: AddProductDialogProps) => {
     },
 
     onSettled: () => {
-      // Refetch to ensure server and cache are consistent
       queryClient.invalidateQueries({ queryKey: ["products"], exact: false });
     },
   });
 
   const formik = useFormik({
-    initialValues: { name: "", price: 0, category: "", stock: 0 },
+    initialValues: {
+      name: product.name,
+      price: product.price,
+      category: product.category,
+      stock: product.stock,
+    },
+    enableReinitialize: true,
     onSubmit: async (values) => {
-      setLoading(true);
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-      const tempProduct: IProduct = {
+        setLoading(true)
+       await new Promise((resolve) => setTimeout(resolve, 1000));
+      const updatedProduct = {
+        ...product,
         ...values,
-        _id: `temp-${Date.now()}`,
-        userId: "",
-        createdAt: "",
-        updatedAt: "",
-        __v: 0,
       };
-
-      // Trigger mutation
-      await addProductMutation.mutateAsync(tempProduct);
-
-      // Reset form
-      formik.resetForm();
-      setOpen(false);
-      setLoading(false);
-      toast.success("product updated successfully");
+      await updateProductMutation.mutateAsync(updatedProduct);
+          setLoading(false)
+      setOpen(false)
+      toast.success("product updated successfully")
     },
   });
 
-  const isFormEmpty = Object.values(formik.values).every(
-    (value) => value === "" || value === 0
-  );
-
+  const isFormChanged =
+    formik.values.name !== product.name ||
+    formik.values.price !== product.price ||
+    formik.values.category !== product.category ||
+    formik.values.stock !== product.stock;
   return (
     <GenericDialog
-      open={open}
-      setOpen={setOpen}
-      toggleIcon="Add Product"
-      title="Add New Product"
-      description="Fill in the product details below"
+    setOpen={setOpen}
+    open={open}
+      toggleIcon={toggleIcon}
+      title="Update Product"
+      description="Modify the product details below"
       footer={
-        <div className="flex space-x-2  ">
+        <div className="flex space-x-2">
           <button
             type="button"
             onClick={() => formik.resetForm()}
-            disabled={isFormEmpty}
+            disabled={!isFormChanged}
             className={`px-6 py-2 rounded border ${
-              isFormEmpty
+              !isFormChanged
                 ? "cursor-not-allowed opacity-50 bg-gray-300 text-gray-600"
                 : "text-red-700 !bg-white hover:text-black"
             }`}
           >
             Cancel
           </button>
-
-          
-            <button
+           <button
               type="submit"
               onClick={() => formik.handleSubmit()}
               className="!bg-green-800 hover:!bg-green-800 text-white px-12 py-2 rounded"
             >
               {loading ? (
-                  <SpinnerCustom />
+           
+            <SpinnerCustom />
           ) : "Submit"}
               
             </button>
-          
+   
         </div>
       }
     >
@@ -137,7 +138,7 @@ export const AddProductDialog = ({ page, limit }: AddProductDialogProps) => {
             name="name"
             value={formik.values.name}
             onChange={formik.handleChange}
-            className="col-span-3 p-2 rounded  border border-white "
+            className="col-span-3 p-2 rounded border border-white"
             placeholder="Product Name"
           />
         </div>
@@ -156,6 +157,7 @@ export const AddProductDialog = ({ page, limit }: AddProductDialogProps) => {
             placeholder="0.00"
           />
         </div>
+
         <div className="grid grid-cols-4 items-center gap-4">
           <label htmlFor="category" className="text-right">
             Category
@@ -169,6 +171,7 @@ export const AddProductDialog = ({ page, limit }: AddProductDialogProps) => {
             placeholder="Clothing, Electronics..."
           />
         </div>
+
         <div className="grid grid-cols-4 items-center gap-4">
           <label htmlFor="stock" className="text-right">
             Stock

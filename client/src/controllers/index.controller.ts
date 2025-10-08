@@ -2,6 +2,8 @@ import type { NavigateFunction } from "react-router-dom";
 import type { AppDispatch } from "../redux/store";
 import { AuthService } from "../services/index.service";
 import { logOut, setUser } from "../redux/slices/authSlice";
+import toast from "react-hot-toast";
+
 
 export class AuthController {
   static async login(
@@ -15,11 +17,11 @@ export class AuthController {
       if (response.success) {
            
         const { accessToken,data} = response;
-  
+       toast.success("login successfully")
   
         
         dispatch(setUser({accessToken,data}));
-
+ 
         navigate("/admin/");
       }
     } catch (error) {

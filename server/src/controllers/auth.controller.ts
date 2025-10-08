@@ -48,12 +48,6 @@ export const signup = async (req: Request, res: Response) => {
 };
 
 
-
-
-
-
-
-
 export const login=async(req:Request,res:Response)=>{
         const {email,password}= req.body
         const user=await User.findOne({email:email})    
@@ -64,6 +58,10 @@ export const login=async(req:Request,res:Response)=>{
         const isMatch=await comparePassword(password,user.password)
         if(!isMatch){
             res.status(HttpStatus.BAD_REQUEST).json({success:false,message:"wrong password"})
+            return 
+        }
+        if(user.role!=="admin"){
+   res.status(HttpStatus.BAD_REQUEST).json({success:false,message:"only admon can access here"})
             return 
         }
 
@@ -188,6 +186,39 @@ export const verifyingToken = async (req: Request, res: Response) => {
     });
   }
 
+};
+
+export const refreshAccessToken = async (req: Request, res: Response) => {
+  try {
+
+    console.log("worked")
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ success: false, message: "No refresh token provided" });
+    }
+
+    const decodedToken = verifyRefreshToken(refreshToken) as IPayload;
+    console.log("redecodedToken",decodedToken)
+
+    if (!decodedToken) {
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ success: false, message: "Invalid refresh token" });
+    }
+    const { iat, exp, ...rest } = decodedToken;
+    const newAccessToken = generateAccessToken(rest);
+
+    console.log("newAccessToken",newAccessToken)
 
 
+    return res.status(HttpStatus.OK).json({ success: true, accessToken: newAccessToken });
+  } catch (error) {
+    console.error("Refresh token error:", error);
+    return res
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Failed to refresh access token" });
+  }
 };

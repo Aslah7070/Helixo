@@ -4,7 +4,7 @@ import { env } from "../configs/env.configs";
 const ACCESS_KEY = env.JWT_ACCESS_SECRET as string;
 const REFRESH_KEY = env.JWT_REFRESH_SECRET as string;
 
-const ACCESS_TOKEN_EXPIRY = "15m";
+const ACCESS_TOKEN_EXPIRY = "1m";
 const REFRESH_TOKEN_EXPIRY = "7d";
 
 export function generateAccessToken(payload: object): string {
@@ -19,7 +19,7 @@ export function verifyAccessToken(token: string) {
   try {
     return jwt.verify(token, ACCESS_KEY);
   } catch (err) {
-    console.error(err)
+    console.error("eroror",err)
     return null;
   }
 }
