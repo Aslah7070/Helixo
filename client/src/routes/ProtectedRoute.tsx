@@ -19,7 +19,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
-  console.log(user,"worked");
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -31,22 +30,20 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (response.data.success) {
       const { user } = response.data;
       dispatch(setUser({ user }));
-      console.log("nsdnmds,mds")
+  
     } else {
       dispatch(logOut());
       navigate("/");
     }
   } catch (error) {
     console.error("Token verification failed:", error);    
-    console.log("noteeeeeeeeee,mds")
-
     dispatch(logOut());
     navigate("/");  
   } finally { 
     const elapsed = Date.now() - start;
     const minDelay = 0; 
     const remaining = minDelay - elapsed;
-    console.log("remaining",remaining)
+
 
     if (remaining > 0) {
       setTimeout(() => setIsLoading(false), remaining);

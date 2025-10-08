@@ -51,7 +51,7 @@ export const authSlice=createSlice({
           state.user = { _id: '', name: '', role: '' };
         }
       }else{
-        return state; // If not in browser, return current state
+        return state; 
       }
     },
         }

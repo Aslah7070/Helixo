@@ -43,7 +43,10 @@ axiosInstance.interceptors.response.use((response)=>{return response},
                 } catch (refreshError) {
                     console.log("axios",refreshError)
                     store.dispatch(logOut())
-                    return Promise.reject(refreshError);
+                    return Promise.reject(refreshError);   
+
+
+                    
                 }   
             }
              return Promise.reject(error);
