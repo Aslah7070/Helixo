@@ -206,7 +206,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     if (!decodedToken) {
       return res
         .status(HttpStatus.UNAUTHORIZED)
-        .json({ success: false, message: "Invalid refresh token" });
+        .json({ success: false, message: "Invalid refresh tokencccccccccccccccccccccccccc" });
     }
     const { iat, exp, ...rest } = decodedToken;
     const newAccessToken = generateAccessToken(rest);
