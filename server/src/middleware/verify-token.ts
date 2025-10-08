@@ -28,7 +28,7 @@ export default function (): (req: Request, res: Response, next: NextFunction) =>
       };
          console.log(payload,"verificatio failed")
          if(!payload){
-            res.status(HttpStatus.UNAUTHORIZED).json({success:false,message:HttpResponse.TOKEN_INVALID})
+            res.status(HttpStatus.UNAUTHORIZED).json({success:false,message:HttpResponse.TOKEN_MISSING})
             return
          
          }
