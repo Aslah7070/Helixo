@@ -40,8 +40,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     console.error("Token verification failed:", error);    
     console.log("noteeeeeeeeee,mds")
 
-    dispatch(logOut());
-    navigate("/");  
+    // dispatch(logOut());
+    // navigate("/");  
   } finally {
     const elapsed = Date.now() - start;
     const minDelay = 0; 
