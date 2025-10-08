@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks/hook";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { axiosInstance } from "../configs/axios.configs.ts";
-import { logOut, setUser } from "../redux/slices/authSlice";
+import { setUser } from "../redux/slices/authSlice";
 import Loader from "../components/re-usable/Loader.tsx";
 
 
