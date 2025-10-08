@@ -7,7 +7,6 @@ import { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRef
 import { deleteCookie, setCookie } from "../utils/cookie.util"
 import { User } from "../models/implementations/user.model"
 import { HttpResponse } from "../constants/http.response"
-import { createHttpError } from "../utils/http-error.util"
 import { IPayload } from "../interfaces/jwt.interface"
 import { IUser } from "../models/interfaces"
 
