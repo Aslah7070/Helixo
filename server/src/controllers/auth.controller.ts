@@ -127,7 +127,7 @@ export const verifyingToken = async (req: Request, res: Response) => {
     if (!accessToken && !refreshToken) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
         success: false,
-        message: HttpResponse.TOKEN_MISSING,
+        message: "arreeelum kando",
       });
     }
 
@@ -150,7 +150,7 @@ export const verifyingToken = async (req: Request, res: Response) => {
       } catch {
         return res.status(HttpStatus.UNAUTHORIZED).json({
           success: false,
-          message: HttpResponse.TOKEN_MISSING,
+          message: "anyone",
         });
       }
     }
