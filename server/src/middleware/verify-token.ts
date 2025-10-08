@@ -18,7 +18,7 @@ export default function (): (req: Request, res: Response, next: NextFunction) =>
 
       const token = authHeader.split(" ")[1];
       if (!token) {
-      return next(createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_MISSING));
+      return next(createHttpError(HttpStatus.UNAUTHORIZED, "entho aavo"));
       }
 
       const payload = verifyAccessToken(token) as {
@@ -28,7 +28,7 @@ export default function (): (req: Request, res: Response, next: NextFunction) =>
       };
          console.log(payload,"verificatio failed")
          if(!payload){
-            res.status(HttpStatus.UNAUTHORIZED).json({success:false,message:HttpResponse.TOKEN_MISSING})
+            res.status(HttpStatus.UNAUTHORIZED).json({success:false,message:"padachonariya"})
             return
          
          }
@@ -41,10 +41,10 @@ export default function (): (req: Request, res: Response, next: NextFunction) =>
     } catch (err: any) {
       if (err.name === "TokenExpiredError") {
           console.log("else",err)
-          return next(createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_MISSING));
+          return next(createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.TOKEN_INVALID));
       } else {
         console.log("ifelse",err)
-         return next(createHttpError(HttpStatus.FORBIDDEN, HttpResponse.TOKEN_MISSING));
+         return next(createHttpError(HttpStatus.FORBIDDEN, HttpResponse.INVALID_CREDENTIALS));
       }
     }
   };
